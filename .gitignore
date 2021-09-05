@@ -27,3 +27,6 @@ lua/lv-user-config/
 *.bak
 *.backup
 *.old
+
+.DS_Store
+
