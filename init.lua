@@ -17,6 +17,9 @@ vim.opt.rtp:append(home_dir .. "/.config/lvim/after")
 vim.cmd [[let &packpath = &runtimepath]]
 -- }}}
 
+_G.PLENARY_DEBUG = false -- Plenary destroys cache with this undocumented flag set to true by default
+require("impatient").enable_profile()
+
 local config = require "config"
 config:init()
 config:load()
@@ -52,10 +55,3 @@ if lsp_settings_status_ok then
 end
 
 require("keymappings").setup()
-
--- TODO: these guys need to be in language files
--- if lvim.lang.emmet.active then
---   require "lsp.emmet-ls"
--- end
--- if lvim.lang.tailwindcss.active then
---   require "lsp.tailwind
