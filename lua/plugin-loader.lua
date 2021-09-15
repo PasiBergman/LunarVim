@@ -1,9 +1,14 @@
 local plugin_loader = {}
 
-function plugin_loader:init()
-  local install_path = "~/.local/share/lunarvim/site/pack/packer/start/packer.nvim"
+function plugin_loader:init(opts)
+  opts = opts or {}
+
+  local install_path = opts.install_path or vim.fn.stdpath "data" .. "/site/pack/packer/start/packer.nvim"
+  local package_root = opts.package_root or vim.fn.stdpath "data" .. "/site/pack"
+  local compile_path = opts.compile_path or vim.fn.stdpath "config" .. "/plugin/packer_compile.lua"
+
   if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-    vim.fn.system { "git", "clone", "https://github.com/wbthomason/packer.nvim", install_path }
+    vim.fn.system { "git", "clone", "--depth", "1", "https://github.com/wbthomason/packer.nvim", install_path }
     vim.cmd "packadd packer.nvim"
   end
 
@@ -12,15 +17,13 @@ function plugin_loader:init()
     return
   end
 
-  local util = require "packer.util"
-
   packer.init {
-    package_root = util.join_paths "~/.local/share/lunarvim/site/pack/",
-    compile_path = util.join_paths("~/.config/lvim", "plugin", "packer_compiled.lua"),
+    package_root = package_root,
+    compile_path = compile_path,
     git = { clone_timeout = 300 },
     display = {
       open_fn = function()
-        return util.float { border = "rounded" }
+        return require("packer.util").float { border = "rounded" }
       end,
     },
   }
@@ -39,8 +42,4 @@ function plugin_loader:load(configurations)
   end)
 end
 
-return {
-  init = function()
-    return plugin_loader:init()
-  end,
-}
+return plugin_loader

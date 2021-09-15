@@ -90,11 +90,10 @@ function utils.reload_lv_config()
   config:load()
 
   require("keymappings").setup() -- this should be done before loading the plugins
-  vim.cmd "source ~/.local/share/lunarvim/lvim/lua/plugins.lua"
+  vim.cmd("source " .. utils.join_paths(get_runtime_dir(), "lvim", "lua", "plugins.lua"))
   local plugins = require "plugins"
-  local plugin_loader = require("plugin-loader").init()
   utils.toggle_autoformat()
-  plugin_loader:load { plugins, lvim.plugins }
+  require("plugin-loader"):load { plugins, lvim.plugins }
   vim.cmd ":PackerCompile"
   vim.cmd ":PackerInstall"
   -- vim.cmd ":PackerClean"
@@ -125,6 +124,12 @@ end
 function utils.is_file(filename)
   local stat = uv.fs_stat(filename)
   return stat and stat.type == "file" or false
+end
+
+function utils.join_paths(...)
+  local path_sep = vim.loop.os_uname().version:match "Windows" and "\\" or "/"
+  local result = table.concat(vim.tbl_flatten { ... }, path_sep):gsub(path_sep .. "+", path_sep)
+  return result
 end
 
 return utils
