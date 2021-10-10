@@ -13,9 +13,11 @@ end
 
 function M.list_available(filetype)
   local formatters = {}
+  local tbl = require "utils.table"
   for _, provider in pairs(null_ls.builtins.formatting) do
-    -- TODO: Add support for wildcard filetypes
-    if vim.tbl_contains(provider.filetypes or {}, filetype) then
+    if tbl.contains(provider.filetypes or {}, function(ft)
+      return ft == "*" or ft == filetype
+    end) then
       table.insert(formatters, provider.name)
     end
   end
@@ -27,7 +29,8 @@ function M.list_configured(formatter_configs)
   local formatters, errors = {}, {}
 
   for _, fmt_config in ipairs(formatter_configs) do
-    local formatter = null_ls.builtins.formatting[fmt_config.exe]
+    local formatter_name = fmt_config.exe:gsub("-", "_")
+    local formatter = null_ls.builtins.formatting[formatter_name]
 
     if not formatter then
       Log:error("Not a valid formatter: " .. fmt_config.exe)
@@ -39,7 +42,11 @@ function M.list_configured(formatter_configs)
         errors[fmt_config.exe] = {} -- Add data here when necessary
       else
         Log:debug("Using formatter: " .. formatter_cmd)
-        formatters[fmt_config.exe] = formatter.with { command = formatter_cmd, extra_args = fmt_config.args }
+        formatters[fmt_config.exe] = formatter.with {
+          command = formatter_cmd,
+          extra_args = fmt_config.args,
+          filetypes = fmt_config.filetypes,
+        }
       end
     end
   end
@@ -47,14 +54,13 @@ function M.list_configured(formatter_configs)
   return { supported = formatters, unsupported = errors }
 end
 
-function M.setup(formatter_configs, filetype)
+function M.setup(formatter_configs)
   if vim.tbl_isempty(formatter_configs) then
     return
   end
 
-  local formatters_by_ft = {}
-  formatters_by_ft[filetype] = M.list_configured(formatter_configs)
-  null_ls.register { sources = formatters_by_ft[filetype].supported }
+  local formatters_by_ft = M.list_configured(formatter_configs)
+  null_ls.register { sources = formatters_by_ft.supported }
 end
 
 return M

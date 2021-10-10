@@ -13,9 +13,11 @@ end
 
 function M.list_available(filetype)
   local linters = {}
+  local tbl = require "utils.table"
   for _, provider in pairs(null_ls.builtins.diagnostics) do
-    -- TODO: Add support for wildcard filetypes
-    if vim.tbl_contains(provider.filetypes or {}, filetype) then
+    if tbl.contains(provider.filetypes or {}, function(ft)
+      return ft == "*" or ft == filetype
+    end) then
       table.insert(linters, provider.name)
     end
   end
@@ -27,7 +29,8 @@ function M.list_configured(linter_configs)
   local linters, errors = {}, {}
 
   for _, lnt_config in pairs(linter_configs) do
-    local linter = null_ls.builtins.diagnostics[lnt_config.exe]
+    local linter_name = lnt_config.exe:gsub("-", "_")
+    local linter = null_ls.builtins.diagnostics[linter_name]
 
     if not linter then
       Log:error("Not a valid linter: " .. lnt_config.exe)
@@ -39,7 +42,11 @@ function M.list_configured(linter_configs)
         errors[lnt_config.exe] = {} -- Add data here when necessary
       else
         Log:debug("Using linter: " .. linter_cmd)
-        linters[lnt_config.exe] = linter.with { command = linter_cmd, extra_args = lnt_config.args }
+        linters[lnt_config.exe] = linter.with {
+          command = linter_cmd,
+          extra_args = lnt_config.args,
+          filetypes = lnt_config.filetypes,
+        }
       end
     end
   end
@@ -47,14 +54,13 @@ function M.list_configured(linter_configs)
   return { supported = linters, unsupported = errors }
 end
 
-function M.setup(linter_configs, filetype)
+function M.setup(linter_configs)
   if vim.tbl_isempty(linter_configs) then
     return
   end
 
-  local linters_by_ft = {}
-  linters_by_ft[filetype] = M.list_configured(linter_configs)
-  null_ls.register { sources = linters_by_ft[filetype].supported }
+  local linters = M.list_configured(linter_configs)
+  null_ls.register { sources = linters.supported }
 end
 
 return M
