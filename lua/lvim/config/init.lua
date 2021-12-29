@@ -40,8 +40,7 @@ function M:init()
   local lvim_lsp_config = require "lvim.lsp.config"
   lvim.lsp = apply_defaults(lvim.lsp, vim.deepcopy(lvim_lsp_config))
 
-  local supported_languages = require "lvim.config.supported_languages"
-  require("lvim.lsp.manager").init_defaults(supported_languages)
+  require("lvim.lsp.manager").init_defaults()
 end
 
 local function handle_deprecated_settings()
@@ -66,6 +65,11 @@ local function handle_deprecated_settings()
     if not vim.tbl_isempty(deprecated_config) then
       deprecation_notice(string.format("lvim.lang.%s", lang))
     end
+  end
+
+  -- lvim.lsp.popup_border
+  if vim.tbl_contains(vim.tbl_keys(lvim.lsp), "popup_border") then
+    deprecation_notice "lvim.lsp.popup_border"
   end
 end
 
