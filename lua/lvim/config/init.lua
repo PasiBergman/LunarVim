@@ -40,22 +40,35 @@ function M:init()
   local lvim_lsp_config = require "lvim.lsp.config"
   lvim.lsp = apply_defaults(lvim.lsp, vim.deepcopy(lvim_lsp_config))
 
+  ---@deprecated replaced with lvim.builtin.alpha
+  lvim.builtin.dashboard = {
+    active = false,
+    on_config_done = nil,
+    search_handler = "",
+    disable_at_vim_enter = 0,
+    session_directory = "",
+    custom_header = {},
+    custom_section = {},
+    footer = {},
+  }
+
   require("lvim.lsp.manager").init_defaults()
 end
 
 local function handle_deprecated_settings()
-  local function deprecation_notice(setting)
+  local function deprecation_notice(setting, new_setting)
     local in_headless = #vim.api.nvim_list_uis() == 0
     if in_headless then
       return
     end
 
     local msg = string.format(
-      "Deprecation notice: [%s] setting is no longer supported. See https://github.com/LunarVim/LunarVim#breaking-changes",
-      setting
+      "Deprecation notice: [%s] setting is no longer supported. %s",
+      setting,
+      new_setting or "See https://github.com/LunarVim/LunarVim#breaking-changes"
     )
     vim.schedule(function()
-      Log:warn(msg)
+      vim.notify_once(msg, vim.log.levels.WARN)
     end)
   end
 
@@ -67,9 +80,24 @@ local function handle_deprecated_settings()
     end
   end
 
+  -- lvim.lsp.override
+  if lvim.lsp.override and not vim.tbl_isempty(lvim.lsp.override) then
+    deprecation_notice("lvim.lsp.override", "Use `lvim.lsp.automatic_configuration.skipped_servers` instead")
+    vim.tbl_map(function(c)
+      if not vim.tbl_contains(lvim.lsp.automatic_configuration.skipped_servers, c) then
+        table.insert(lvim.lsp.automatic_configuration.skipped_servers, c)
+      end
+    end, lvim.lsp.override)
+  end
+
   -- lvim.lsp.popup_border
   if vim.tbl_contains(vim.tbl_keys(lvim.lsp), "popup_border") then
     deprecation_notice "lvim.lsp.popup_border"
+  end
+
+  -- dashboard.nvim
+  if lvim.builtin.dashboard.active then
+    deprecation_notice("lvim.builtin.dashboard", "Use `lvim.builtin.alpha` instead. See LunarVim#1906")
   end
 end
 
@@ -103,18 +131,20 @@ end
 --- Override the configuration with a user provided one
 -- @param config_path The path to the configuration overrides
 function M:reload()
-  require_clean("lvim.utils.hooks").run_pre_reload()
+  vim.schedule(function()
+    require_clean("lvim.utils.hooks").run_pre_reload()
 
-  M:init()
-  M:load()
+    M:init()
+    M:load()
 
-  require("lvim.core.autocmds").configure_format_on_save()
+    require("lvim.core.autocmds").configure_format_on_save()
 
-  local plugins = require "lvim.plugins"
-  local plugin_loader = require "lvim.plugin-loader"
+    local plugins = require "lvim.plugins"
+    local plugin_loader = require "lvim.plugin-loader"
 
-  plugin_loader.load { plugins, lvim.plugins }
-  require_clean("lvim.utils.hooks").run_post_reload()
+    plugin_loader.reload { plugins, lvim.plugins }
+    require_clean("lvim.utils.hooks").run_post_reload()
+  end)
 end
 
 return M
