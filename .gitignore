@@ -22,6 +22,8 @@ lv-settings.lua
 lua/lv-user/
 lua/lv-user-config/
 
+.DS_Store
+
 *.tmp
 *.temp
 *.bak
