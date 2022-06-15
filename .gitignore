@@ -28,5 +28,4 @@ lua/lv-user-config/
 *.backup
 *.old
 
-.DS_Store
-
+.luacheckcache
