@@ -64,12 +64,11 @@ return {
       header = "",
       prefix = "",
       format = function(d)
-        local t = vim.deepcopy(d)
         local code = d.code or (d.user_data and d.user_data.lsp.code)
         if code then
-          t.message = string.format("%s [%s]", t.message, code):gsub("1. ", "")
+          return string.format("%s [%s]", d.message, code):gsub("1. ", "")
         end
-        return t.message
+        return d.message
       end,
     },
   },
@@ -79,11 +78,6 @@ return {
     focusable = true,
     style = "minimal",
     border = "rounded",
-  },
-  peek = {
-    max_height = 15,
-    max_width = 30,
-    context = 10,
   },
   on_attach_callback = nil,
   on_init_callback = nil,
@@ -101,12 +95,6 @@ return {
       ["gr"] = { vim.lsp.buf.references, "Goto references" },
       ["gI"] = { vim.lsp.buf.implementation, "Goto Implementation" },
       ["gs"] = { vim.lsp.buf.signature_help, "show signature help" },
-      ["gp"] = {
-        function()
-          require("lvim.lsp.peek").Peek "definition"
-        end,
-        "Peek definition",
-      },
       ["gl"] = {
         function()
           local config = lvim.lsp.diagnostics.float
