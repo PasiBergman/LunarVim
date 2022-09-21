@@ -1,6 +1,7 @@
 local M = {}
 
 local builtins = {
+  "lvim.core.theme",
   "lvim.core.which-key",
   "lvim.core.gitsigns",
   "lvim.core.cmp",
@@ -9,6 +10,9 @@ local builtins = {
   "lvim.core.telescope",
   "lvim.core.treesitter",
   "lvim.core.nvimtree",
+  "lvim.core.lir",
+  "lvim.core.illuminate",
+  "lvim.core.breadcrumbs",
   "lvim.core.project",
   "lvim.core.bufferline",
   "lvim.core.autopairs",

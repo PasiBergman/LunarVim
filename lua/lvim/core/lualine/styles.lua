@@ -11,6 +11,7 @@ styles.none = {
   style = "none",
   options = {
     theme = "auto",
+    globalstatus = true,
     icons_enabled = lvim.use_icons,
     component_separators = { left = "", right = "" },
     section_separators = { left = "", right = "" },
@@ -40,6 +41,7 @@ styles.default = {
   style = "default",
   options = {
     theme = "auto",
+    globalstatus = true,
     icons_enabled = lvim.use_icons,
     component_separators = { left = "", right = "" },
     section_separators = { left = "", right = "" },
@@ -80,7 +82,6 @@ styles.lvim = {
     },
     lualine_b = {
       components.branch,
-      components.filename,
     },
     lualine_c = {
       components.diff,
@@ -88,13 +89,12 @@ styles.lvim = {
     },
     lualine_x = {
       components.diagnostics,
-      components.treesitter,
       components.lsp,
       components.filetype,
     },
-    lualine_y = {},
+    lualine_y = { components.location },
     lualine_z = {
-      components.scrollbar,
+      components.progress,
     },
   },
   inactive_sections = {

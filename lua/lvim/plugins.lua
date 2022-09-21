@@ -15,17 +15,11 @@ local core_plugins = {
     end,
   },
   {
-    "lunarvim/onedarker.nvim",
-    branch = "freeze",
+    "folke/tokyonight.nvim",
     config = function()
-      pcall(function()
-        if lvim and lvim.colorscheme == "onedarker" then
-          require("onedarker").setup()
-          lvim.builtin.lualine.options.theme = "onedarker"
-        end
-      end)
+      require("lvim.core.theme").setup()
     end,
-    disable = lvim.colorscheme ~= "onedarker",
+    disable = not vim.startswith(lvim.colorscheme, "tokyonight"),
   },
   {
     "rcarriga/nvim-notify",
@@ -139,7 +133,14 @@ local core_plugins = {
     end,
     disable = not lvim.builtin.nvimtree.active,
   },
-
+  -- Lir
+  {
+    "christianchiarulli/lir.nvim",
+    config = function()
+      require("lvim.core.lir").setup()
+    end,
+    disable = not lvim.builtin.lir.active,
+  },
   {
     "lewis6991/gitsigns.nvim",
 
@@ -196,6 +197,15 @@ local core_plugins = {
     disable = not lvim.builtin.lualine.active,
   },
 
+  -- breadcrumbs
+  {
+    "SmiteshP/nvim-navic",
+    config = function()
+      require("lvim.core.breadcrumbs").setup()
+    end,
+    disable = not lvim.builtin.breadcrumbs.active,
+  },
+
   {
     "akinsho/bufferline.nvim",
     config = function()
@@ -248,6 +258,27 @@ local core_plugins = {
   -- SchemaStore
   {
     "b0o/schemastore.nvim",
+  },
+
+  {
+    "RRethy/vim-illuminate",
+    config = function()
+      require("lvim.core.illuminate").setup()
+    end,
+    disable = not lvim.builtin.illuminate.active,
+  },
+  {
+    "lunarvim/onedarker.nvim",
+    branch = "freeze",
+    config = function()
+      pcall(function()
+        if lvim and lvim.colorscheme == "onedarker" then
+          require("onedarker").setup()
+          lvim.builtin.lualine.options.theme = "onedarker"
+        end
+      end)
+    end,
+    disable = lvim.colorscheme ~= "onedarker",
   },
 }
 

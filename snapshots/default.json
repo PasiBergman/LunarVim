@@ -35,6 +35,9 @@
   "gitsigns.nvim": {
     "commit": "d7e0bcb"
   },
+  "lir.nvim": {
+    "commit": "7d8c6c4"
+  },
   "lua-dev.nvim": {
     "commit": "fd7a18e"
   },
@@ -64,6 +67,9 @@
   },
   "nvim-lspconfig": {
     "commit": "f8b3c24"
+  },
+  "nvim-navic": {
+    "commit": "202312e"
   },
   "nvim-notify": {
     "commit": "7076ce8"
@@ -109,6 +115,12 @@
   },
   "toggleterm.nvim": {
     "commit": "5e393e5"
+  },
+  "tokyonight.nvim": {
+    "commit": "e0bdba5"
+  },
+  "vim-illuminate": {
+    "commit": "b545262"
   },
   "which-key.nvim": {
     "commit": "d5f0c63"
