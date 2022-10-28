@@ -46,6 +46,11 @@ function M:init()
       friendly_snippets = true,
     },
   }
+
+  ---@deprecated
+  lvim.builtin.notify = {
+    active = false,
+  }
 end
 
 local function handle_deprecated_settings()
@@ -93,6 +98,11 @@ local function handle_deprecated_settings()
     deprecation_notice("lvim.builtin.dashboard", "Use `lvim.builtin.alpha` instead. See LunarVim#1906")
   end
 
+  -- notify.nvim
+  if lvim.builtin.notify.active then
+    deprecation_notice("lvim.builtin.notify", "See LunarVim#3294")
+  end
+
   if lvim.autocommands.custom_groups then
     deprecation_notice(
       "lvim.autocommands.custom_groups",
@@ -138,6 +148,10 @@ function M:load(config_path)
 
   if lvim.transparent_window then
     autocmds.enable_transparent_mode()
+  end
+
+  if lvim.reload_config_on_save then
+    autocmds.enable_reload_config_on_save()
   end
 end
 

@@ -8,6 +8,32 @@ M.config = function()
   lvim.builtin.breadcrumbs = {
     active = true,
     on_config_done = nil,
+    winbar_filetype_exclude = {
+      "help",
+      "startify",
+      "dashboard",
+      "packer",
+      "neo-tree",
+      "neogitstatus",
+      "NvimTree",
+      "Trouble",
+      "alpha",
+      "lir",
+      "Outline",
+      "spectre_panel",
+      "toggleterm",
+      "DressingSelect",
+      "Jaq",
+      "harpoon",
+      "dap-repl",
+      "dap-terminal",
+      "dapui_console",
+      "lab",
+      "Markdown",
+      "notify",
+      "noice",
+      "",
+    },
     options = {
       icons = {
         Array = icons.Array .. " ",
@@ -67,43 +93,14 @@ M.setup = function()
   end
 end
 
-M.winbar_filetype_exclude = {
-  "help",
-  "startify",
-  "dashboard",
-  "packer",
-  "neo-tree",
-  "neogitstatus",
-  "NvimTree",
-  "Trouble",
-  "alpha",
-  "lir",
-  "Outline",
-  "spectre_panel",
-  "toggleterm",
-  "DressingSelect",
-  "Jaq",
-  "harpoon",
-  "dap-repl",
-  "dap-terminal",
-  "dapui_console",
-  "lab",
-  "Markdown",
-  "",
-}
-
 M.get_filename = function()
   local filename = vim.fn.expand "%:t"
   local extension = vim.fn.expand "%:e"
   local f = require "lvim.utils.functions"
 
   if not f.isempty(filename) then
-    local file_icon, file_icon_color =
-      require("nvim-web-devicons").get_icon_color(filename, extension, { default = true })
+    local file_icon, hl_group = require("nvim-web-devicons").get_icon(filename, extension, { default = true })
 
-    local hl_group = "FileIconColor" .. extension
-
-    vim.api.nvim_set_hl(0, hl_group, { fg = file_icon_color })
     if f.isempty(file_icon) then
       file_icon = lvim.icons.kind.File
     end
@@ -161,10 +158,7 @@ local get_gps = function()
 end
 
 local excludes = function()
-  if vim.tbl_contains(M.winbar_filetype_exclude, vim.bo.filetype) then
-    return true
-  end
-  return false
+  return vim.tbl_contains(lvim.builtin.breadcrumbs.winbar_filetype_exclude or {}, vim.bo.filetype)
 end
 
 M.get_winbar = function()
